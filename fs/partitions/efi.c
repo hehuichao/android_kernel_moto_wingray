@@ -651,6 +651,26 @@ int efi_partition(struct parsed_partitions *state)
 
 		if (!is_pte_valid(&ptes[i], last_lba(state->bdev)))
 			continue;
+		
+#define MB256 0x080000
+#define MB512 0x100000
+		
+		if (start == 0x1D000)
+ 		{
+ 			printk("Fixing up system part\n");
+ 			size = MB512;
+ 		}
+ 		else if (start == 0x9D000)
+ 		{
+ 			printk("Fixing up cache part\n");
+ 			start += MB256;
+ 		}
+ 		else if (start == 0xF1800)
+ 		{
+ 			printk("Fixing up userdata part\n");
+ 			start += MB256;
+ 			size -= MB256;
+ 		}
 
 		put_partition(state, i+1, start * ssz, size * ssz);
 
